@@ -9,13 +9,17 @@ const int LED_PIN = 13;
 const int TIMER_INTERRUPT = 0;
 const byte MOTOR_ON  = 255;
 const byte MOTOR_OFF = 0;
+const int ANALOG_READ_MAX = 1023;
+const int ANALOG_READ_MIN = 0;
 
 Timer t;
+static int lastest_timer_event = -1;
 
 void start_timer() {
   int val = analogRead(POT_PIN);
+  // If POT is al the way, run forever
   if (val < 1020) {
-    t.after(map(val, 0, 1023, 4000,  20000), turn_off_motor);
+    latest_timer_event = t.after(map(val, ANALOG_READ_MIN, ANALOG_READ_MAX, 4000,  20000), turn_off_motor);
   }
 }
 
@@ -51,6 +55,10 @@ void loop(){
   } else {
     analogWrite(MOTOR_PIN, MOTOR_ON);
     digitalWrite(LED_PIN, HIGH);
+    if (latest_timer_event != -1) {
+      t.stop(latest_timer_event);
+      latest_timer_event = -1;
+    }
   }
 }
 
