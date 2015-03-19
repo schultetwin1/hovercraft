@@ -2,7 +2,7 @@
 #include <Timer.h>
  
 
-const int MOTOR_PIN = A0;
+const int LIFT_MOTOR_PIN = A0;
 const int POT_PIN = A1;
 const int BUTTON_PIN = 2;
 const int LED_PIN = 13;
@@ -32,7 +32,7 @@ void setup(){
   // configure pin2 as an input and enable the internal pull-up resistor
   pinMode(BUTTON_PIN, INPUT_PULLUP);
   pinMode(LED_PIN, OUTPUT);
-  pinMode(MOTOR_PIN, OUTPUT);
+  pinMode(LIFT_MOTOR_PIN, OUTPUT);
   pinMode(POT_PIN, INPUT);  
   attachInterrupt(TIMER_INTERRUPT, start_timer, RISING);
 }
@@ -53,7 +53,7 @@ void loop(){
   if (sensorVal == HIGH) {
     digitalWrite(LED_PIN, LOW);
   } else {
-    analogWrite(MOTOR_PIN, MOTOR_ON);
+    analogWrite(LIFT_MOTOR_PIN, MOTOR_ON);
     digitalWrite(LED_PIN, HIGH);
     if (latest_timer_event != -1) {
       t.stop(latest_timer_event);
@@ -63,7 +63,5 @@ void loop(){
 }
 
 void turn_off_motor() {
-  analogWrite(MOTOR_PIN, MOTOR_OFF);
+  analogWrite(LIFT_MOTOR_PIN, MOTOR_OFF);
 }
-
-
