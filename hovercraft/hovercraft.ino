@@ -33,7 +33,7 @@ void setup(){
   pinMode(LIFT_MOTOR_PIN, OUTPUT);
   pinMode(PULL_MOTOR_PIN, OUTPUT);
   pinMode(POT_PIN, INPUT);
-  for (int i = 0; i < (sizeof(CHANNEL_PINS) / sizeof(CHANNEL_PINS[0]));  i++) {
+  for (int i = 1; i < (sizeof(CHANNEL_PINS) / sizeof(CHANNEL_PINS[0]));  i++) {
     pinMode(CHANNEL_PINS[i], INPUT);
   }
   
@@ -44,7 +44,21 @@ void setup(){
 }
 
 void loop(){
-  analogWrite(LIFT_MOTOR_PIN, MOTOR_ON);
+  // Read from the reciever
+  int lift = pulseIn(CHANNEL_PINS[3], HIGH);
+  int thrust = pulseIn(CHANNEL_PINS[3], HIGH);
+  int dir = pulseIn(CHANNEL_PINS[3], HIGH);
+  
+  analogWrite(LIFT_MOTOR_PIN, lift);
+  analogWrite(THRUST_MOTOR_PIN, thrust);
+  rudder.write(dir);
+  
+  
+  Serial.print("Ch3 Value: ");
+  Serial.print(ch3Value);
+  Serial.print(" Time: ");
+  Serial.print(millis());
+  Serial.print("\n");
 }
 
 void turn_off_motor() {
