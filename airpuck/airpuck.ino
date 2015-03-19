@@ -21,7 +21,6 @@ void setup(){
   pinMode(LIFT_MOTOR_PIN, OUTPUT);
   pinMode(PULL_MOTOR_PIN, OUTPUT);
   pinMode(POT_PIN, INPUT);  
-  attachInterrupt(TIMER_INTERRUPT, start_timer, RISING);
 }
 
 void loop(){
