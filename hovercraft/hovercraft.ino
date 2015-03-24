@@ -1,7 +1,7 @@
 #include <Servo.h>
 
-const int LIFT_MOTOR_PIN = A0;
-const int PULL_MOTOR_PIN = A2;
+const int LIFT_MOTOR_PIN = A6;
+const int PULL_MOTOR_PIN = A7;
 const int MOTOR_SERVO_PIN = 6;
 const int RUDDER_SERVO_PIN = 5;
 const int POT_PIN = A1;
@@ -56,8 +56,8 @@ void loop(){
   int lift = pulseIn(CHANNEL_PINS[3], HIGH, PULSEIN_TIMEOUT);
   int thrust = pulseIn(CHANNEL_PINS[2], HIGH, PULSEIN_TIMEOUT);
   int dir = pulseIn(CHANNEL_PINS[1], HIGH, PULSEIN_TIMEOUT);
+  dir = constrain(dir, 1060, 1860);
   
-  /*
   Serial.print("Lift: ");
   Serial.print(lift);
   Serial.print(" Pull: ");
@@ -65,12 +65,13 @@ void loop(){
   Serial.print(" Dir: ");
   Serial.print(dir);
   Serial.print("\n");
-  */
+  
   
   analogWrite(LIFT_MOTOR_PIN, map(constrain(lift, 1000, 1850), 1000, 1850, 0, 255));
   analogWrite(PULL_MOTOR_PIN, map(constrain(thrust, 1150, 1950), 1150, 1950, 0, 255));
-  pull.writeMicroseconds(constrain(dir, 1060, 1860));
-  rudder.writeMicroseconds(constrain(dir, 1060, 1860));
+  pull.writeMicroseconds(dir);
+  rudder.writeMicroseconds(dir);
+
 }
 
 void turn_off_motor() {
