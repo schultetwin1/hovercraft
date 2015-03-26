@@ -1,7 +1,7 @@
 #include <Servo.h>
 
-const int LIFT_MOTOR_PIN = A0;
-const int PULL_MOTOR_PIN = A1;
+const int LIFT_MOTOR_PIN = 10;
+const int PULL_MOTOR_PIN = 11;
 const int MOTOR_SERVO_PIN = 6;
 const int RUDDER_SERVO_PIN = 5;
 const int POT_PIN = A1;
