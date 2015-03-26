@@ -26,7 +26,7 @@ const int MIN_LIFT_INPUT  = 1050;
 const int MAX_THRUST_OUTPUT = 255;
 const int MIN_THRUST_OUTPUT = 0;
 const int MAX_THRUST_INPUT  = 1900;
-const int MIN_THRUST_INPUT  = 1550;
+const int MIN_THRUST_INPUT  = 1600;
 
 // Lift Input will be between 1060 and 1860us
 // Output between 900 - 2100 us
