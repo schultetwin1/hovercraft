@@ -14,20 +14,26 @@ const int RUDDER_SERVO_PIN = 5;
 
 const int LED_PIN = 13;
 
+// Lift Input will be between 1000us and 1850us
+// Output between 0 - 200 (not 255 to save the motor)
 const int MAX_LIFT_OUTPUT = 200;
 const int MIN_LIFT_OUTPUT = 0;
 const int MAX_LIFT_INPUT  = 1850;
-const int MIN_LIFT_INPUT  = 1000;
+const int MIN_LIFT_INPUT  = 1050;
 
+// Thrust Input will be between 1550us (halfway) and 1900us
+// Output between 0 - 255
 const int MAX_THRUST_OUTPUT = 255;
 const int MIN_THRUST_OUTPUT = 0;
 const int MAX_THRUST_INPUT  = 1900;
 const int MIN_THRUST_INPUT  = 1550;
 
-const int MAX_RUDDER_OUTPUT    = 2100;
-const int MIN_RUDDER_OUTPUT    = 900;
-const int MAX_MOTOR_DIR_OUTPUT = 2100;
-const int MIN_MOTOR_DIR_OUTPUT = 900;
+// Lift Input will be between 1060 and 1860us
+// Output between 900 - 2100 us
+const int MAX_RUDDER_OUTPUT    = 2000;
+const int MIN_RUDDER_OUTPUT    = 1000;
+const int MAX_MOTOR_DIR_OUTPUT = 2000;
+const int MIN_MOTOR_DIR_OUTPUT = 1000;
 const int MAX_DIR_INPUT        = 1860;
 const int MIN_DIR_INPUT        = 1060;
 
@@ -40,6 +46,13 @@ const int PULSEIN_TIMEOUT = 25000;
  * Channel 2 = Pull (Thrust forward)
  * Channel 1 = Direction
  */
+
+enum Channels {
+  LIFT_CHANNEL = 3,
+  THRUST_CHANNEL = 2,
+  DIR_CHANNEL = 1
+};  
+  
 const int CHANNEL_PINS [4] = {
   -1, /* Channel 0 does not exist */
   7,
@@ -130,21 +143,21 @@ void setup(){
 
 void loop(){
   // Read from the reciever
-  int lift = pulseInLong(CHANNEL_PINS[3], HIGH, PULSEIN_TIMEOUT);
+  int lift = pulseInLong(CHANNEL_PINS[LIFT_CHANNEL], HIGH, PULSEIN_TIMEOUT);
   if (lift != 0) {
     lift = constrain(lift, MIN_LIFT_INPUT, MAX_LIFT_INPUT);
     lift = map(lift, MIN_LIFT_INPUT, MAX_LIFT_INPUT, MIN_LIFT_OUTPUT, MAX_LIFT_OUTPUT);
   }
   analogWrite(LIFT_MOTOR_PIN, lift);
     
-  int thrust = pulseInLong(CHANNEL_PINS[2], HIGH, PULSEIN_TIMEOUT);
+  int thrust = pulseInLong(CHANNEL_PINS[THRUST_CHANNEL], HIGH, PULSEIN_TIMEOUT);
   if (thrust != 0) {
     thrust = constrain(thrust, MIN_THRUST_INPUT, MAX_THRUST_INPUT);
     thrust = map(thrust, MIN_THRUST_INPUT, MAX_THRUST_INPUT, MIN_THRUST_OUTPUT, MAX_THRUST_OUTPUT);
   }
   analogWrite(PULL_MOTOR_PIN, thrust);
   
-  int dir = pulseInLong(CHANNEL_PINS[1], HIGH, PULSEIN_TIMEOUT);
+  int dir = pulseInLong(CHANNEL_PINS[DIR_CHANNEL], HIGH, PULSEIN_TIMEOUT);
   int rudder_dir;
   int motor_dir;
   if (dir != 0) {
