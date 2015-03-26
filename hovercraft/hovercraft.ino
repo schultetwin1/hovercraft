@@ -144,6 +144,8 @@ void setup(){
   rudder.writeMicroseconds(1500);
 }
 
+static unsigned last_rudder_dir = 1500;
+static unsigned last_thrust_dir = 1500;
 void loop(){
   // Read from the reciever
   int lift = pulseInLong(CHANNEL_PINS[LIFT_CHANNEL], HIGH, PULSEIN_TIMEOUT);
@@ -162,17 +164,24 @@ void loop(){
   
   int dir = pulseInLong(CHANNEL_PINS[DIR_CHANNEL], HIGH, PULSEIN_TIMEOUT);
   int rudder_dir;
-  int motor_dir;
+  int thrust_dir;
   if (dir != 0) {
     dir = constrain(dir, MIN_DIR_INPUT, MAX_DIR_INPUT);
     rudder_dir = map(dir, MIN_DIR_INPUT, MAX_DIR_INPUT, MIN_RUDDER_OUTPUT, MAX_RUDDER_OUTPUT);
-    motor_dir  = map(dir, MIN_DIR_INPUT, MAX_DIR_INPUT, MIN_MOTOR_DIR_OUTPUT, MAX_MOTOR_DIR_OUTPUT);
+    thrust_dir  = map(dir, MIN_DIR_INPUT, MAX_DIR_INPUT, MIN_MOTOR_DIR_OUTPUT, MAX_MOTOR_DIR_OUTPUT);
   } else {
     dir = 1500;
   }
   
-  pull.writeMicroseconds(motor_dir);
-  rudder.writeMicroseconds(rudder_dir);
+  // Only output to each servo if change is greater than 20 us
+  if (abs(last_thrust_dir - thrust_dir) > 20) {
+    pull.writeMicroseconds(thrust_dir);
+    last_thrust_dir = thrust_dir;
+  }
+  if (abs(last_rudder_dir - rudder_dir) > 20) {
+    rudder.writeMicroseconds(rudder_dir);
+    last_rudder_dir = rudder_dir;
+  }
   
   Serial.print("Millis: ");
   Serial.print(millis());
@@ -181,6 +190,6 @@ void loop(){
   Serial.print(" Pull: ");
   Serial.print(thrust);
   Serial.print(" Dir: ");
-  Serial.print(dir);
+  Serial.print(last_thrust_dir);
   Serial.print("\n");
 }
