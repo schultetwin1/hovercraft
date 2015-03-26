@@ -93,6 +93,8 @@ int median_filter(int data_point, int* data) {
   return sorted_data[FRAME_SIZE / 2];
 }
 
+// Returns the pulse length (in microseconds) on pin "pin"
+// Returns 0 if timeout
 unsigned long pulseInLong(uint8_t pin, uint8_t state, unsigned long timeout) {
   uint8_t bit = digitalPinToBitMask(pin);
   uint8_t port = digitalPinToPort(pin);
@@ -127,7 +129,8 @@ void setup(){
   
   //start serial connection
   Serial.begin(9600);
-  
+
+  // Needs to pulse at 1Hz  
   pinMode(LED_PIN, OUTPUT);
   pinMode(LIFT_MOTOR_PIN, OUTPUT);
   pinMode(PULL_MOTOR_PIN, OUTPUT);
