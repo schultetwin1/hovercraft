@@ -147,21 +147,33 @@ void setup(){
 static unsigned last_rudder_dir = 1500;
 static unsigned last_thrust_dir = 1500;
 void loop(){
-  // Read from the reciever
+  // Read lift from the reciever and output to motor
+  int all_read = 1;
   int lift = pulseInLong(CHANNEL_PINS[LIFT_CHANNEL], HIGH, PULSEIN_TIMEOUT);
+  Serial.print(" Lift: ");
+  Serial.print(lift);
   if (lift != 0) {
     lift = constrain(lift, MIN_LIFT_INPUT, MAX_LIFT_INPUT);
     lift = map(lift, MIN_LIFT_INPUT, MAX_LIFT_INPUT, MIN_LIFT_OUTPUT, MAX_LIFT_OUTPUT);
+  } else {
+    all_read = 0;
   }
   analogWrite(LIFT_MOTOR_PIN, lift);
-    
+  
+  
+  // Read thrust from receiver and output to motor  
   int thrust = pulseInLong(CHANNEL_PINS[THRUST_CHANNEL], HIGH, PULSEIN_TIMEOUT);
+  Serial.print(" Pull: ");
+  Serial.print(thrust);
   if (thrust != 0) {
     thrust = constrain(thrust, MIN_THRUST_INPUT, MAX_THRUST_INPUT);
     thrust = map(thrust, MIN_THRUST_INPUT, MAX_THRUST_INPUT, MIN_THRUST_OUTPUT, MAX_THRUST_OUTPUT);
+  } else {
+    all_read = 0;
   }
   analogWrite(PULL_MOTOR_PIN, thrust);
   
+  // Read in direction from receiver and output to both servos
   int dir = pulseInLong(CHANNEL_PINS[DIR_CHANNEL], HIGH, PULSEIN_TIMEOUT);
   int rudder_dir;
   int thrust_dir;
@@ -170,7 +182,14 @@ void loop(){
     rudder_dir = map(dir, MIN_DIR_INPUT, MAX_DIR_INPUT, MIN_RUDDER_OUTPUT, MAX_RUDDER_OUTPUT);
     thrust_dir  = map(dir, MIN_DIR_INPUT, MAX_DIR_INPUT, MIN_MOTOR_DIR_OUTPUT, MAX_MOTOR_DIR_OUTPUT);
   } else {
-    dir = 1500;
+    all_read = 0;
+    rudder_dir = 1500;
+    thrust_dir = 1500;
+  }
+  if (all_read) {
+    digitalWrite(LED_PIN, LOW);
+  } else {
+    digitalWrite(LED_PIN, HIGH);
   }
   
   // Only output to each servo if change is greater than 20 us
@@ -183,12 +202,6 @@ void loop(){
     last_rudder_dir = rudder_dir;
   }
   
-  Serial.print("Millis: ");
-  Serial.print(millis());
-  Serial.print(" Lift: ");
-  Serial.print(lift);
-  Serial.print(" Pull: ");
-  Serial.print(thrust);
   Serial.print(" Dir: ");
   Serial.print(last_thrust_dir);
   Serial.print("\n");
