@@ -32,6 +32,36 @@ unsigned last_pull_us = 1500;
 Servo rudder;
 unsigned last_rudder_us = 1500;
 
+unsigned long pulseInLong(uint8_t pin, uint8_t state, unsigned long timeout) {
+  uint8_t bit = digitalPinToBitMask(pin);
+  uint8_t port = digitalPinToPort(pin);
+  uint8_t stateMask = (state ? bit : 0);
+  unsigned long width = 0;
+  
+  unsigned long numloops = 0;
+  unsigned long maxloops = microsecondsToClockCycles(timeout);
+  
+  while ((*portInputRegister(port) & bit) == stateMask) {
+    if (numloops++ == maxloops) {
+      return 0;
+    }
+  }
+  
+  while ((*portInputRegister(port) & bit) != stateMask) {
+    if (numloops++ == maxloops) {
+      return 0;
+    }
+  }
+  
+  unsigned long start = micros();
+  while ((*portInputRegister(port) & bit) == stateMask) {
+    if (numloops++ == maxloops) {
+      return 0;
+    }
+  }
+  return micros() - start;
+}
+
 void setup(){
   
   //start serial connection
@@ -53,12 +83,27 @@ void setup(){
 
 void loop(){
   // Read from the reciever
-  int lift = pulseIn(CHANNEL_PINS[3], HIGH, PULSEIN_TIMEOUT);
-  int thrust = pulseIn(CHANNEL_PINS[2], HIGH, PULSEIN_TIMEOUT);
-  int dir = pulseIn(CHANNEL_PINS[1], HIGH, PULSEIN_TIMEOUT);
-  dir = map(constrain(dir, 1060, 1860), 1060, 1860, 900, 2100);
-  lift = map(constrain(lift, 1000, 1850), 1000, 1850, 0, 255);
-  thrust = map(constrain(thrust, 1500, 1950), 1500, 1950, 0, 255);
+  int lift = pulseInLong(CHANNEL_PINS[3], HIGH, PULSEIN_TIMEOUT);
+  if (lift != 0) {
+    lift = map(constrain(lift, 1000, 1850), 1000, 1850, 0, 255);
+  }
+  analogWrite(LIFT_MOTOR_PIN, lift);
+    
+  int thrust = pulseInLong(CHANNEL_PINS[2], HIGH, PULSEIN_TIMEOUT);
+  if (thrust != 0) {
+    thrust = map(constrain(thrust, 1500, 1950), 1500, 1950, 0, 255);
+  }
+  analogWrite(PULL_MOTOR_PIN, thrust);
+  
+  int dir = pulseInLong(CHANNEL_PINS[1], HIGH, PULSEIN_TIMEOUT);
+  if (dir != 0) {
+    dir = map(constrain(dir, 1060, 1860), 1060, 1860, 900, 2100);
+  } else {
+    dir = 1500;
+  }
+  
+  pull.writeMicroseconds(dir);
+  rudder.writeMicroseconds(dir);
   
   Serial.print("Millis: ");
   Serial.print(millis());
@@ -69,13 +114,6 @@ void loop(){
   Serial.print(" Dir: ");
   Serial.print(dir);
   Serial.print("\n");
-  
-  
-  analogWrite(LIFT_MOTOR_PIN, lift);
-  analogWrite(PULL_MOTOR_PIN, thrust);
-  pull.writeMicroseconds(dir);
-  rudder.writeMicroseconds(dir);
-
 }
 
 void turn_off_motor() {
