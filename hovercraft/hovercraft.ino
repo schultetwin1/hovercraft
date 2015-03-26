@@ -1,7 +1,7 @@
 #include <Servo.h>
 
-const int LIFT_MOTOR_PIN = A0;
-const int PULL_MOTOR_PIN = A1;
+const int LIFT_MOTOR_PIN = 10;
+const int PULL_MOTOR_PIN = 11;
 const int MOTOR_SERVO_PIN = 6;
 const int RUDDER_SERVO_PIN = 5;
 const int POT_PIN = A1;
@@ -27,10 +27,38 @@ const int CHANNEL_PINS [4] = {
   9,
 };
 
+const int FRAME_SIZE = 5;
+int CHANNEL_FILTER[FRAME_SIZE] = {1500};
+
 Servo pull;
-unsigned last_pull_us = 1500;
 Servo rudder;
-unsigned last_rudder_us = 1500;
+
+void sort(int* data, const int len) {
+  for (int i = 1; i < len; ++i) {
+    int j = data[i];
+    int k;
+    for (k = i - 1; (k >= 0) && (j > data[k]); k--) {
+      data[k + 1] = data[k];
+    }
+    data[k + 1] = j;
+  }
+}
+
+int median_filter(int data_point, int* data) {
+  static int sorted_data[FRAME_SIZE];
+  for (int i = FRAME_SIZE - 1; i > 0; i--) {
+    data[i] = data[i - 1];
+  }
+  //add in new value
+  data[0] = data_point;
+
+  // Create a sorted array
+  memcpy(sorted_data, data, FRAME_SIZE * sizeof(int));
+  sort(sorted_data, FRAME_SIZE);
+
+  // Get median
+  return sorted_data[FRAME_SIZE / 2];
+}
 
 unsigned long pulseInLong(uint8_t pin, uint8_t state, unsigned long timeout) {
   uint8_t bit = digitalPinToBitMask(pin);
