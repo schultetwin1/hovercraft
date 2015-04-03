@@ -35,8 +35,8 @@ const int MID_THRUST_INPUT  = (MAX_THRUST_INPUT + MIN_THRUST_INPUT) / 2;
 
 // Lift Input will be between 1060 and 1860us
 // Output between 1000 - 2000 us
-const int MAX_MOTOR_DIR_OUTPUT = 2000;
-const int MIN_MOTOR_DIR_OUTPUT = 1000;
+const int MAX_MOTOR_DIR_OUTPUT = 2200;
+const int MIN_MOTOR_DIR_OUTPUT = 1200;
 const int MID_MOTOR_DIR_OUTPUT = (MIN_MOTOR_DIR_OUTPUT + MAX_MOTOR_DIR_OUTPUT) / 2;
 const int MAX_DIR_INPUT        = 1592;
 const int MIN_DIR_INPUT        = 772;
@@ -143,6 +143,6 @@ void loop(){
   if (!PPM::controllerConnected()) {
     PPM::zeroPulses();
   }
-  delay(25);
+  delay(15);
   
 }
