@@ -1,6 +1,11 @@
 #include <Servo.h>
 #include "PPM.h"
 
+/**
+ * NEED TO TRY THIS:
+ * http://letsmakerobots.com/content/wireless-upload-link-arduino-using-xbee-modules
+ */
+
 // These pin numbers have been choose carefully
 // Please ask Matt before changing
 // DO NOT USE analogWrite on pins 9 or 10, it will not work
