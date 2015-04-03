@@ -55,6 +55,7 @@ Servo thrust_servo;
 
 void setup(){
 
+  Serial.begin(9600);
   // @TODO: Needs to pulse at 1Hz  
   pinMode(LED_PIN, OUTPUT);
   
@@ -110,7 +111,7 @@ void thrust() {
 void boost() {
   int boost = PPM::channelPulse(BOOST_CHANNEL);
   
-  if (boost < 1500) {
+  if (boost < 1200) {
     MAX_LIFT_OUTPUT = 255;
     digitalWrite(LED_PIN, HIGH);
   } else {
@@ -143,6 +144,7 @@ void loop(){
   if (!PPM::controllerConnected()) {
     PPM::zeroPulses();
   }
+  Serial.println("hi");
   delay(15);
   
 }
