@@ -20,23 +20,24 @@ const int LED_PIN          = 13;
  * DO NOT PLAY WITH THE TRIM
  */
 // Output between 0 - 200 (not 255 to save the motor)
-int       MAX_LIFT_OUTPUT =  200;
-const int MIN_LIFT_OUTPUT =    0;
+int       MAX_LIFT_OUTPUT = 200;
+const int MIN_LIFT_OUTPUT = 0;
 const int MAX_LIFT_INPUT  = 1160;
-const int MIN_LIFT_INPUT  =  572;
+const int MIN_LIFT_INPUT  = 572;
 
-// Thrust Input will be between 1550us (halfway) and 1900us
 // Output between 0 - 255
+// Use mid_input to reverse motor
 const int MAX_THRUST_OUTPUT = 255;
 const int MIN_THRUST_OUTPUT = 0;
 const int MAX_THRUST_INPUT  = 1584;
 const int MIN_THRUST_INPUT  = 760;
-const int MID_THRUST_INPUT  = 1180;
+const int MID_THRUST_INPUT  = (MAX_THRUST_INPUT + MIN_THRUST_INPUT) / 2;
 
 // Lift Input will be between 1060 and 1860us
-// Output between 900 - 2100 us
+// Output between 1000 - 2000 us
 const int MAX_MOTOR_DIR_OUTPUT = 2000;
 const int MIN_MOTOR_DIR_OUTPUT = 1000;
+const int MID_MOTOR_DIR_OUTPUT = (MIN_MOTOR_DIR_OUTPUT + MAX_MOTOR_DIR_OUTPUT) / 2;
 const int MAX_DIR_INPUT        = 1592;
 const int MIN_DIR_INPUT        = 772;
 
@@ -72,12 +73,13 @@ void setup(){
   // Setup servo
   // Move servo to center
   thrust_servo.attach(MOTOR_SERVO_PIN);
-  thrust_servo.writeMicroseconds(1500);
+  thrust_servo.writeMicroseconds(MID_MOTOR_DIR_OUTPUT);
   
   // Setup PPM receiver
   PPM::begin();
 }
 
+// Reads in lifts pulse and outputs the correct lift to the motor
 void lift() {
   int lift = PPM::channelPulse(LIFT_CHANNEL);
   if (lift != 0) {
@@ -87,6 +89,7 @@ void lift() {
   analogWrite(LIFT_MOTOR_PIN, lift);
 }
 
+// Reads in thrust pulse and outputs the correct lift to the motor
 void thrust() {
    // Read thrust from receiver and output to motor  
   int thrust = PPM::channelPulse(THRUST_CHANNEL);
@@ -103,6 +106,7 @@ void thrust() {
   analogWrite(THRUST_MOTOR_PIN, thrust);
 }
 
+// Reads in channel 5's boost and decides if boost should be enabled
 void boost() {
   int boost = PPM::channelPulse(BOOST_CHANNEL);
   
@@ -115,6 +119,7 @@ void boost() {
   }
 }
 
+// Reads in thrust pulse and outputs the correct direction to the servo
 void dir() {
   // Read in direction from receiver and output to both servos
   int dir = PPM::channelPulse(DIR_CHANNEL);
@@ -123,7 +128,7 @@ void dir() {
     dir = constrain(dir, MIN_DIR_INPUT, MAX_DIR_INPUT);
     thrust_dir  = map(dir, MIN_DIR_INPUT, MAX_DIR_INPUT, MAX_MOTOR_DIR_OUTPUT, MIN_MOTOR_DIR_OUTPUT);
   } else {
-    thrust_dir = 1500;
+    thrust_dir = MID_MOTOR_DIR_OUTPUT;
   }
   thrust_servo.writeMicroseconds(thrust_dir);
   
