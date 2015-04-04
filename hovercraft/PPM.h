@@ -2,7 +2,7 @@
 #define __AERO205_PPM__
 #include "Arduino.h"
 
-#define NUM_PPM_CHANNELS  5
+#define NUM_PPM_CHANNELS  9
 
 class PPM {
  public:

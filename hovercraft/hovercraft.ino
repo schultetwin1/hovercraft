@@ -25,7 +25,7 @@ const int LED_PIN          = 13;
  * DO NOT PLAY WITH THE TRIM
  */
 // Output between 0 - 200 (not 255 to save the motor)
-int       MAX_LIFT_OUTPUT = 200;
+const int MAX_LIFT_OUTPUT = 255;
 const int MIN_LIFT_OUTPUT = 0;
 const int MAX_LIFT_INPUT  = 1160;
 const int MIN_LIFT_INPUT  = 572;
@@ -56,6 +56,7 @@ const int THRUST_CHANNEL = 1;
 const int LIFT_CHANNEL = 2;
 const int BOOST_CHANNEL = 4;
 
+static bool is_boosted = false;
 Servo thrust_servo;
 
 void setup(){
@@ -88,9 +89,13 @@ void setup(){
 // Reads in lifts pulse and outputs the correct lift to the motor
 void lift() {
   int lift = PPM::channelPulse(LIFT_CHANNEL);
+
   if (lift != 0) {
     lift = constrain(lift, MIN_LIFT_INPUT, MAX_LIFT_INPUT);
     lift = map(lift, MIN_LIFT_INPUT, MAX_LIFT_INPUT, MIN_LIFT_OUTPUT, MAX_LIFT_OUTPUT);
+  }
+  if (!is_boosted) {
+    lift = constrain(lift, MIN_LIFT_OUTPUT, 200);
   }
   analogWrite(LIFT_MOTOR_PIN, lift);
 }
@@ -99,6 +104,7 @@ void lift() {
 void thrust() {
    // Read thrust from receiver and output to motor  
   int thrust = PPM::channelPulse(THRUST_CHANNEL);
+
   if (thrust != 0) {
     if (thrust < MID_THRUST_INPUT - 40) {
       thrust = map(thrust, MID_THRUST_INPUT, MIN_THRUST_INPUT, MID_THRUST_INPUT, MAX_THRUST_INPUT);
@@ -115,12 +121,12 @@ void thrust() {
 // Reads in channel 5's boost and decides if boost should be enabled
 void boost() {
   int boost = PPM::channelPulse(BOOST_CHANNEL);
-  
+
   if (boost < 1200) {
-    MAX_LIFT_OUTPUT = 255;
+    is_boosted = true;
     digitalWrite(LED_PIN, HIGH);
   } else {
-    MAX_LIFT_OUTPUT = 200;
+    is_boosted = false;
     digitalWrite(LED_PIN, LOW);
   }
 }
@@ -149,7 +155,7 @@ void loop(){
   if (!PPM::controllerConnected()) {
     PPM::zeroPulses();
   }
-  Serial.println("hi");
-  delay(15);
+  //Serial.println("hi");
+  delay(25);
   
 }

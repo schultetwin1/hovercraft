@@ -14,7 +14,7 @@ void ISRPIN2(){
    }else{
      //falling edge
      uint16_t time = micros() - PPM::pulseStart;
-     if(time > 5000){
+     if(time > 3500){
        // Greater than 5ms, therefore it's the gap.
        PPM::curPulse = 0;
        return;
@@ -22,6 +22,7 @@ void ISRPIN2(){
      if(PPM::curPulse >= NUM_PPM_CHANNELS){
        // we have a problem, controller disconnected?
        // continue current state
+       PPM::zeroPulses();
        return; 
      }
      // Assign the pulse and increment the count.
