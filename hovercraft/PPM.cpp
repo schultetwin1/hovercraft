@@ -4,7 +4,7 @@ const int RECVEIVER_PIN    =  2; // !! MUST BE ON PIN 2. Using hardware interrup
 
 volatile uint16_t PPM::curPulse = 0;
 volatile uint32_t PPM::pulseStart = 0;
-volatile uint32_t PPM::pulses[NUM_PPM_CHANNELS];
+volatile uint32_t PPM::pulses[PPM::NUM_CHANNELS];
 
 void ISRPIN2(){
   // Handle PPM pin changes
@@ -19,7 +19,7 @@ void ISRPIN2(){
        PPM::curPulse = 0;
        return;
      }
-     if(PPM::curPulse >= NUM_PPM_CHANNELS){
+     if(PPM::curPulse >= PPM::NUM_CHANNELS){
        // we have a problem, controller disconnected?
        // continue current state
        PPM::zeroPulses();
@@ -46,7 +46,7 @@ void PPM::end() {
 }
 
 uint32_t PPM::channelPulse(uint8_t channel) {
-  if (channel >= NUM_PPM_CHANNELS) return -1;
+  if (channel >= PPM::NUM_CHANNELS) return -1;
   
   return pulses[channel];
 }
@@ -59,7 +59,7 @@ bool PPM::controllerConnected() {
 }
 
 void PPM::zeroPulses() {
-  for (int i = 0; i < NUM_PPM_CHANNELS; i++) {
+  for (int i = 0; i < PPM::NUM_CHANNELS; i++) {
     pulses[i] = 0;
   }
 }

@@ -2,8 +2,6 @@
 #define __AERO205_PPM__
 #include "Arduino.h"
 
-#define NUM_PPM_CHANNELS  9
-
 class PPM {
  public:
   static void begin();
@@ -12,10 +10,12 @@ class PPM {
   static bool controllerConnected();
   static void zeroPulses();
   
+  static const int NUM_CHANNELS = 9;
+  
  private:
   static volatile uint16_t curPulse;
   static volatile uint32_t pulseStart;
-  static volatile uint32_t pulses[NUM_PPM_CHANNELS];
+  static volatile uint32_t pulses[NUM_CHANNELS];
   
   friend void ISRPIN2();
 };
