@@ -6,7 +6,7 @@ volatile uint16_t PPM::curPulse = 0;
 volatile uint32_t PPM::pulseStart = 0;
 volatile uint32_t PPM::pulses[PPM::NUM_CHANNELS];
 
-void ISRPIN2(){
+void PPM::isr(){
   // Handle PPM pin changes
    if(digitalRead(RECVEIVER_PIN) == HIGH){
      //rising edge
@@ -36,7 +36,7 @@ void PPM::begin() {
   
   zeroPulses();
   pinMode(RECVEIVER_PIN, INPUT);
-  attachInterrupt(0,ISRPIN2,CHANGE);
+  attachInterrupt(0,PPM::isr,CHANGE);
 }
 
 void PPM::end() {

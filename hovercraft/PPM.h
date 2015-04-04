@@ -17,6 +17,6 @@ class PPM {
   static volatile uint32_t pulseStart;
   static volatile uint32_t pulses[NUM_CHANNELS];
   
-  friend void ISRPIN2();
+  static void isr();
 };
 #endif
