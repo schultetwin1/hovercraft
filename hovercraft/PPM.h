@@ -17,6 +17,11 @@ class PPM {
   static volatile uint32_t pulseStart;
   static volatile uint32_t pulses[NUM_CHANNELS];
   
+  // 3.5 ms minimum start pulse length
+  static const int MIN_START_PULSE_LEN = 3500;
+  // 10 ms timeout
+  static const int PULSE_LEN_TIMEOUT = 10000;
+  
   static void isr();
 };
 #endif

@@ -11,6 +11,12 @@
 // DO NOT USE analogWrite on pins 9 or 10, it will not work
 // See (http://arduino.cc/en/reference/servo) for explination
 
+// Timer2 used by analogWrite to pin 3 and pin 11
+// Timer1 used by Servo library
+// Timer0 used by millis() and micros()
+
+// @TODO: Switch pwm from analogWrite to pins 5 & 6
+// @TODO: Rewrite micros() using timer2 to get better accuracy (~0.5us)
 // Pin 3 and Pin 11 use Timer 2
 // Pin 2 used by PPM library
 const int LIFT_MOTOR_PIN   =  3;
