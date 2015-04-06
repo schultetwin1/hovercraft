@@ -23,14 +23,15 @@ const int LIFT_MOTOR_PIN   =  3;
 const int MOTOR_SERVO_PIN  =  6;
 const int THRUST_DIR_PIN   = 12;
 const int THRUST_MOTOR_PIN = 11;
-const int LED_PIN          = 13;
+const int BOOST_LED_PIN    = 13;
+const int STATUS_LED_PIN   = 9;
 
 /**
- * The following min and max inputs come from the oscope.
+ * The following min and max inputs come from observations on the oscope.
  * If you play with the trim, you mess up these numbers
  * DO NOT PLAY WITH THE TRIM
  */
-// Output between 0 - 200 (not 255 to save the motor)
+// Output between 0 - 255
 const int MAX_LIFT_OUTPUT = 255;
 const int MIN_LIFT_OUTPUT = 0;
 const int MAX_LIFT_INPUT  = 1160;
@@ -68,8 +69,8 @@ Servo thrust_servo;
 void setup(){
 
   Serial.begin(9600);
-  // @TODO: Needs to pulse at 1Hz  
-  pinMode(LED_PIN, OUTPUT);
+  pinMode(BOOST_LED_PIN, OUTPUT);
+  pinMode(STATUS_LED_PIN, OUTPUT);
   
   // Set thrust direction output
   // Initialize to forward
@@ -130,10 +131,10 @@ void boost() {
 
   if (boost < 1200) {
     is_boosted = true;
-    digitalWrite(LED_PIN, HIGH);
+    digitalWrite(BOOST_LED_PIN, HIGH);
   } else {
     is_boosted = false;
-    digitalWrite(LED_PIN, LOW);
+    digitalWrite(BOOST_LED_PIN, LOW);
   }
 }
 
@@ -161,7 +162,12 @@ void loop(){
   if (!PPM::controllerConnected()) {
     PPM::zeroPulses();
   }
-  //Serial.println("hi");
-  delay(25);
+  
+  if (millis() % 2000 < 1000) {
+    digitalWrite(STATUS_LED_PIN, HIGH);
+  } else {
+    digitalWrite(STATUS_LED_PIN, LOW);
+  }
+  delay(20);
   
 }
