@@ -7,13 +7,14 @@ volatile uint32_t PPM::pulseStart = 0;
 volatile uint32_t PPM::pulses[PPM::NUM_CHANNELS];
 
 void PPM::isr(){
+  uint16_t now = micros()
   // Handle PPM pin changes
    if(digitalRead(RECVEIVER_PIN) == HIGH){
      //rising edge
-     PPM::pulseStart = micros();
+     PPM::pulseStart = now;
    }else{
      //falling edge
-     uint16_t time = micros() - PPM::pulseStart;
+     uint16_t time = now - PPM::pulseStart;
      if(time > 3500){
        // Greater than 5ms, therefore it's the gap.
        PPM::curPulse = 0;
