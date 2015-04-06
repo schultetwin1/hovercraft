@@ -23,7 +23,6 @@ void PPM::isr(){
      if(PPM::curPulse >= PPM::NUM_CHANNELS){
        // we have a problem, controller disconnected?
        // continue current state
-       PPM::zeroPulses();
        return; 
      }
      // Assign the pulse and increment the count.
@@ -37,18 +36,19 @@ void PPM::begin() {
   
   zeroPulses();
   pinMode(RECVEIVER_PIN, INPUT);
-  attachInterrupt(0,PPM::isr,CHANGE);
+  
+  // Interrupt 0 on pin 2
+  attachInterrupt(0, PPM::isr, CHANGE);
 }
 
 void PPM::end() {
+  // Interrupt 0 on pin 2
   detachInterrupt(0);
   curPulse = 0;
   pulseStart = 0;
 }
 
 uint32_t PPM::channelPulse(uint8_t channel) {
-  if (channel >= PPM::NUM_CHANNELS) return -1;
-  
   return pulses[channel];
 }
 
