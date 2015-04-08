@@ -14,7 +14,7 @@ class PPM {
   
  private:
   static volatile uint16_t curPulse;
-  static volatile uint32_t pulseStart;
+  static volatile unsigned long pulseStart;
   static volatile uint32_t pulses[NUM_CHANNELS];
   
   // 3.5 ms minimum start pulse length

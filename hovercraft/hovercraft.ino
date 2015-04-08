@@ -34,24 +34,24 @@ const int STATUS_LED_PIN   = 9;
 // Output between 0 - 255
 const int MAX_LIFT_OUTPUT = 255;
 const int MIN_LIFT_OUTPUT = 0;
-const int MAX_LIFT_INPUT  = 1160;
-const int MIN_LIFT_INPUT  = 572;
+const int MAX_LIFT_INPUT  = 1392;
+const int MIN_LIFT_INPUT  = 436;
 
 // Output between 0 - 255
 // Use mid_input to reverse motor
 const int MAX_THRUST_OUTPUT = 255;
 const int MIN_THRUST_OUTPUT = 0;
-const int MAX_THRUST_INPUT  = 1584;
-const int MIN_THRUST_INPUT  = 760;
-const int MID_THRUST_INPUT  = (MAX_THRUST_INPUT + MIN_THRUST_INPUT) / 2;
+const int MAX_THRUST_INPUT  = 1424;
+const int MIN_THRUST_INPUT  = 600;
+const int MID_THRUST_INPUT  = 1016;
 
 // Lift Input will be between 1060 and 1860us
 // Output between 1000 - 2000 us
 const int MAX_MOTOR_DIR_OUTPUT = 2200;
 const int MIN_MOTOR_DIR_OUTPUT = 1200;
 const int MID_MOTOR_DIR_OUTPUT = (MIN_MOTOR_DIR_OUTPUT + MAX_MOTOR_DIR_OUTPUT) / 2;
-const int MAX_DIR_INPUT        = 1592;
-const int MIN_DIR_INPUT        = 772;
+const int MAX_DIR_INPUT        = 1564;
+const int MIN_DIR_INPUT        = 728;
 
 // Channel 0: 772 - 1592 (dir)
 // Channel 1: 760 - 1584 (thrust) (mid = 1180)
@@ -68,7 +68,7 @@ Servo thrust_servo;
 
 void setup(){
 
-  Serial.begin(9600);
+  //Serial.begin(9600);
   pinMode(BOOST_LED_PIN, OUTPUT);
   pinMode(STATUS_LED_PIN, OUTPUT);
   
@@ -142,6 +142,7 @@ void boost() {
 void dir() {
   // Read in direction from receiver and output to both servos
   int dir = PPM::channelPulse(DIR_CHANNEL);
+
   int thrust_dir;
   if (dir != 0) {
     dir = constrain(dir, MIN_DIR_INPUT, MAX_DIR_INPUT);
@@ -154,14 +155,15 @@ void dir() {
 }
 
 void loop(){
+  if (!PPM::controllerConnected()) {
+    PPM::zeroPulses();
+  }
   // Read lift from the reciever and output to motor
   boost();
   lift();
   thrust();
   dir();
-  if (!PPM::controllerConnected()) {
-    PPM::zeroPulses();
-  }
+  
   
   if (millis() % 1000 < 500) {
     digitalWrite(STATUS_LED_PIN, HIGH);
