@@ -163,7 +163,7 @@ void loop(){
     PPM::zeroPulses();
   }
   
-  if (millis() % 2000 < 1000) {
+  if (millis() % 1000 < 500) {
     digitalWrite(STATUS_LED_PIN, HIGH);
   } else {
     digitalWrite(STATUS_LED_PIN, LOW);
